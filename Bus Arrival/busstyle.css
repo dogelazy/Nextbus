@@ -1,0 +1,40 @@
+.head{
+    background-color: rgb(134, 190, 255);
+}
+form{
+    background-color: rgb(225, 225, 225);
+}
+input {
+    margin-right:0.5em;
+  }
+input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.btn {
+    color:fff;
+    background-color: rgb(134, 190, 255);
+    &:hover, &:focus {
+      background-color: rgb(176, 213, 255);
+      box-shadow:none;
+    }
+}
+.station{
+    background-color: rgb(134, 190, 255);
+    display:box;
+}
+.rmk{
+    color:rgb(0, 111, 237);
+    font-size: 80%;
+}
+.nobus{
+    color:red;
+    font-size:110%;
+}
+.eta{
+    font-size:100%;
+}
+#icon{
+    margin-right: 5%;
+}

@@ -1,6 +1,11 @@
 <?php
 session_start();
-
+//declare variable for filtering company name
+$space=" ";
+$KMB_eng="KMB";
+$CTB_eng="CTB";
+$KMB_tc="九巴";
+$CTB_tc="城巴";
 // check language is get and save in session
 if (isset($_GET['lang']) && ($_GET['lang'] == 'tc' || $_GET['lang'] == 'en')) {
     $_SESSION['lang'] = $_GET['lang'];
@@ -19,6 +24,9 @@ if ($lang == 'tc') {
     $toText          = "到";
     $minute          = "分鐘";
     $Noschedule      = "暫時沒有預訂班次";
+    $KMB             = "九巴";
+    $CTB             = "城巴";
+    $changelog       = "變更日誌";
 } else {
     $pageTitle       = "Next bus";
     $busRouteLabel   = "Bus Route:";
@@ -30,6 +38,9 @@ if ($lang == 'tc') {
     $toText          = "to";
     $minute          = "minute";
     $Noschedule      = "Temporarily no scheduled bus";
+    $KMB             = "KMB";
+    $CTB             = "CTB";
+    $changelog       = "changelog";
 }
 
 // set API with tc/en
@@ -42,10 +53,14 @@ $rmk_field  = ($lang == 'tc') ? 'rmk_tc'  : 'rmk_en';
 date_default_timezone_set('Asia/Hong_Kong');
 
 // //preload route
-$routeurl = 'https://data.etabus.gov.hk/v1/transport/kmb/route/';
+$routeurl      = 'https://data.etabus.gov.hk/v1/transport/kmb/route/';
 $route_content = file_get_contents($routeurl);
-$routeobj = json_decode($route_content);
-$routedata = $routeobj->data;
+$routeobj      = json_decode($route_content);
+$routedata     = $routeobj->data;
+$ctburl      ='https://rt.data.gov.hk/v2/transport/citybus/route/ctb';
+$ctbroute_content = file_get_contents($ctburl);
+$ctbrouteobj      = json_decode($ctbroute_content);
+$ctbroutedata     = $ctbrouteobj->data;
 
 // refresh 60s
 header("refresh:60");
@@ -70,7 +85,8 @@ $queryStringTC = http_build_query($currentParams);
   <div class="head">
     <br>
     <a href="?<?php echo $queryStringEn; ?>">English</a> | 
-    <a href="?<?php echo $queryStringTC; ?>">繁體中文</a>
+    <a href="?<?php echo $queryStringTC; ?>">繁體中文</a> |
+    <a href="changelog.html"><?php echo $changelog?></a>
     <img src="icon.png" align="right" id="icon" width=10% alt="icon">
     <br>
     <br>
@@ -91,7 +107,7 @@ $queryStringTC = http_build_query($currentParams);
       <?php
       foreach ($routedata as $x) {
           if($x->bound=="I" && $x->service_type=="1"){
-          echo "<option value='" . $x->route . "'>";
+          echo "<option value='" . $x->route." ".$KMB."'>";
           }
       }
       ?>
@@ -111,6 +127,7 @@ $queryStringTC = http_build_query($currentParams);
 
 <?php
 if (isset($_GET['route']) && !empty($_GET['route'])) {
+
   switch ($_GET['route']){
     case "KY Chan":
       echo "<img src='https://i.ibb.co/hxtQF7xm/IMG-2006.jpg' alt = 'KY Chan is angry'>";
@@ -122,7 +139,19 @@ if (isset($_GET['route']) && !empty($_GET['route'])) {
       echo "<img src='https://i.ibb.co/hxtQF7xm/IMG-2006.jpg' alt = 'KY Chan is angry'>";
       return;
   }
+  //deleting company name
+  if (str_contains($_GET['route'], $space . $KMB_tc)) {
+    $route = trim(str_replace($KMB_tc, "", $_GET['route']));
+  } elseif (str_contains($_GET['route'], $space . $CTB_tc)) {
+    $route = trim(str_replace($CTB_tc, "", $_GET['route']));
+  } elseif (str_contains($_GET['route'], $space . $KMB_eng)) {
+    $route = trim(str_replace($KMB_eng, "", $_GET['route']));
+  } elseif (str_contains($_GET['route'], $space . $CTB_eng)) {
+    $route = trim(str_replace($CTB_eng, "", $_GET['route']));
+  } else {
     $route = $_GET['route'];
+    }
+    
     $direction = isset($_GET['direction']) ? $_GET['direction'] : 'outbound';
 
     // eta
@@ -136,9 +165,9 @@ if (isset($_GET['route']) && !empty($_GET['route'])) {
     $url1 = 'https://data.etabus.gov.hk/v1/transport/kmb/route-stop/';
     $findurl = $url . $route . "/" . $direction . "/" . $type;
     $findurlstop = $url1 . $route . "/" . $direction . "/" . $type;
-
     $content = file_get_contents($findurl);
     $obj = json_decode($content);
+
     if ($direction=="inbound" && (!isset($obj->data->route))) {
         $direction = "outbound";
         $Sdirection = "O";
@@ -147,7 +176,10 @@ if (isset($_GET['route']) && !empty($_GET['route'])) {
         $content = file_get_contents($findurl);
         $obj = json_decode($content);
     }
-
+        if(empty($obj->data->route)){
+          echo "<span class='nobus'>Invalid route input! Please check is route letter upper case or is the data input a valid route.</span>";
+          die();
+        }
     // display route
     echo "<h1>" . $obj->data->route . "</h1>";
     echo "<h2>" . $fromText . " " . $obj->data->$orig_field . " " . $toText . " " . $obj->data->$dest_field . "</h2><br>";

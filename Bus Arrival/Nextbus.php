@@ -1,4 +1,5 @@
 <?php
+$foundETA = false;
 session_start();
 //declare variable for filtering company name
 $KMB_eng = "KMB";
@@ -218,7 +219,6 @@ if (isset($_GET['route']) && !empty(trim($_GET['route']))) {
         echo "<h3><div class='station'>" . $stopName . "</div></h3>";
   
         // find for matching ETA records based on bus stop sequence
-        $foundETA = false;
         foreach ($etadata as $x) {
             if ($x->seq == $y->seq) {
                 $etatime = $x->eta;

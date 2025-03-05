@@ -74,7 +74,7 @@ $queryStringTC = http_build_query($currentParams);
 <html lang="<?php echo $lang; ?>">
 <head>
   <title><?php echo $pageTitle; ?></title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="busstyle.css">
   <link rel="icon" type="image/x-icon" href="icon.png">
 </head>
 <body>

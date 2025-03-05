@@ -135,6 +135,9 @@ if (isset($_GET['route']) && !empty(trim($_GET['route']))) {
         case "CS Chan":
           echo "<img src='https://i.ibb.co/hxtQF7xm/IMG-2006.jpg' alt='KY Chan is angry'>";
           return;
+                  case "巴士陳":
+            echo "<img src='https://i.ibb.co/hxtQF7xm/IMG-2006.jpg' alt='KY Chan is angry'>";
+            return;
     }
 
     // form "Route|direction"

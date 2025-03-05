@@ -1,5 +1,18 @@
+h1{
+    padding-left: 1%;
+}
 .head{
     background-color: rgb(134, 190, 255);
+        background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),url('header.jpg'); 
+        background-size: cover; /* Adjust as needed */ 
+        height: 190px; /* Set a height for your header */ 
+        /* Other styling properties */ 
+        z-index: -1;
+      }
+.headbtn{
+    background-color: rgb(134, 190, 255);
+    font-size: 120%;
+    padding-left: 1%;
 }
 form{
     background-color: rgb(225, 225, 225);
@@ -23,6 +36,7 @@ input[type="email"] {
 .station{
     background-color: rgb(134, 190, 255);
     display:box;
+    padding-left: 1%;
 }
 .rmk{
     color:rgb(0, 111, 237);
@@ -34,7 +48,12 @@ input[type="email"] {
 }
 .eta{
     font-size:100%;
+    padding-left: 2%;
 }
-#icon{
-    margin-right: 5%;
+.formarea{
+    padding-left: 1%;
+    display: inline;
+}
+.pageend{
+    font-size: 110%;
 }

@@ -7,7 +7,7 @@
 <center><div class="head"><h1>Changelog</h1></div>
     beta 0.10.1a :<br>Added company name after route in datalist<br>
                    Added verification in invalid route <br>
-                   Added Changelog
+                   Added Changelog<br><br>
     beta 0.10.1b :<br>
                   Improved CSS<br>
                   Restructed Search system<br>
@@ -17,6 +17,3 @@
     Technical Support:<br><br>Mr. HW Leung<br><br>
     Should you have any question or find any bugs, please feel free to contact us!<br><br>
     <img src="icon.png"  width=25% alt="icon">
-
-
-

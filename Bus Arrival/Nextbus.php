@@ -20,10 +20,11 @@ if ($lang == 'tc') {
     $fromText        = "由";
     $toText          = "往"; // Changed from "到" to "往"
     $minute          = "分鐘";
-    $Noschedule      = "暫時沒有預訂班次";
+    $Noschedule      = "暫時沒有預定班次";
     $KMB             = "九巴";
     $CTB             = "城巴";
     $changelog       = "變更日誌";
+    $arriving        = "到達";
 } else {
     $pageTitle       = "Next bus";
     $busRouteLabel   = "Bus Route:";
@@ -35,6 +36,7 @@ if ($lang == 'tc') {
     $KMB             = "KMB";
     $CTB             = "CTB";
     $changelog       = "changelog";
+    $arriving        = "Arriving";
 }
 
 // set API with tc/en
@@ -72,23 +74,23 @@ $queryStringTC = http_build_query($currentParams);
 <html lang="<?php echo $lang; ?>">
 <head>
   <title><?php echo $pageTitle; ?></title>
-  <link rel="stylesheet" href="busstyle.css">
+  <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="icon.png">
 </head>
 <body>
   <!-- language switching -->
   <div class="head">
-    <br>
-    <a href="?<?php echo $queryStringEn; ?>">English</a> | 
+    <br><br><br><br><br>
+    <h1><font color="white"><?php echo $pageTitle; ?></font></h1>
+    <div class="headbtn"><a href="?<?php echo $queryStringEn; ?>">English</a> | 
     <a href="?<?php echo $queryStringTC; ?>">繁體中文</a> |
     <a href="changelog.html"><?php echo $changelog?></a>
-    <img src="icon.png" align="right" id="icon" width="10%" alt="icon">
-    <br><br><br>
-    <h1><?php echo $pageTitle; ?></h1>
+    </div>
   </div>
-
+  <br>
+  <div class="formarea">
   <!-- form -->
-  <form action="" method="get">
+  <form action="" method="get"> 
     <?php 
       // save the selected language
       echo "<input type='hidden' name='lang' value='" . $lang . "'>";
@@ -112,11 +114,10 @@ $queryStringTC = http_build_query($currentParams);
               echo "<option value='" . $x->route . "| " . $directionShort . "'>" . $displayText . "</option>";
           }
       }
+      echo "  ";
       ?>
     </datalist>
-    <br>
-    <input type="submit" class="btn" value="<?php echo $searchLabel; ?>">
-  </form>
+<input type="submit" class="btn" value="<?php echo $searchLabel; ?>"></div>
 
 <?php
 // if set then process the route.
@@ -225,16 +226,23 @@ if (isset($_GET['route']) && !empty(trim($_GET['route']))) {
                     $etatime1  = new DateTime($etatime);
                     $now1      = new DateTime($now);
                     $eta_diff  = $etatime1->diff($now1);
+                    
                     echo "<span class='eta'>".$eta_diff->format("%i $minute") . "</span> " . "<span class='rmk'>".$x->$rmk_field . "</span><br>";
                 }
                 $foundETA = true;
             }
         }
+        }
+    }
         if (!$foundETA) {
             echo "<span class='nobus'>" . $Noschedule . "</span><br>";
         }
-    }
-}
+  
 ?>
+<center>
+  <img src="icon.png" width="10%" alt="logo">
+  <div class="pageend">By ©2024-2025 CSKLSC ICT F.4 student</div>
+</center>
+
 </body>
 </html>

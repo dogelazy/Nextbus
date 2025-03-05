@@ -24,11 +24,6 @@ form{
 input {
     margin-right:0.5em;
   }
-input[type="text"] {
-    margin-bottom: -1px;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-}
 .btn {
     color:fff;
     background-color: rgb(134, 190, 255);

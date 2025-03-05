@@ -111,7 +111,7 @@ $queryStringTC = http_build_query($currentParams);
               // display, eg:"1A 九巴 往 destination"
               $displayText = $x->route . " " . $KMB . " " . (($lang == 'tc') ? "往" : "to") . " " . (($lang == 'tc') ? $x->dest_tc : $x->dest_en);
               // option value encode both the route & direction
-              echo "<option value='" . $x->route . "| " . $directionShort . "'>" . $displayText . "</option>";
+              echo "<option value='" . $x->route . " | " . $directionShort . "'>" . $displayText . "</option>";
           }
       }
       echo "  ";

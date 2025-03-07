@@ -45,8 +45,6 @@ input {
     background-color: rgb(134, 190, 255);
     &:hover, &:focus {
       background-color: rgb(176, 213, 255);
-      box-shadow:none;
-      position: fixed;
     }
 }
 .station{

@@ -19,7 +19,7 @@ if ($lang == 'tc') {
   $busRouteLabel = "巴士路線:";
   $searchLabel = "查詢";
   $fromText = "由";
-  $toText = "往"; // Changed from "到" to "往"
+  $toText = "往";
   $minute = "分鐘";
   $Noschedule = "暫時沒有預定班次";
   $KMB = "九巴";
@@ -61,7 +61,7 @@ $ctbroute_content = file_get_contents($ctburl);
 $ctbrouteobj = json_decode($ctbroute_content);
 $ctbroutedata = $ctbrouteobj->data;
 
-// refresh 60s
+// refresh every 60s
 header("refresh:60");
 
 // build query strings for language switching while getting parameters
@@ -83,11 +83,11 @@ $queryStringTC = http_build_query($currentParams);
 <body>
   <!-- language switching -->
    <?php
-   $i=rand(1,2);
-  if($i==2){
-  echo "<div class='head1'>";
-   }else{
-    echo "<div class='head'>";
+   $i = rand(1,2);
+   if($i == 2){
+     echo "<div class='head1'>";
+   } else {
+     echo "<div class='head'>";
    }
    ?>
   
@@ -106,8 +106,10 @@ $queryStringTC = http_build_query($currentParams);
       echo "<input type='hidden' name='lang' value='" . $lang . "'>";
       ?>
       <?php echo $busRouteLabel; ?>
+      <!-- submit when click enter -->
       <input list="route" name="route"
-        value="<?php echo isset($_GET['route']) ? htmlspecialchars($_GET['route']) : ''; ?>">
+        value="<?php echo isset($_GET['route']) ? htmlspecialchars($_GET['route']) : ''; ?>"
+        onkeydown="if(event.keyCode === 13){ event.preventDefault(); document.getElementById('searchbtn').click(); return false; }">
       <datalist id="route">
         <?php
         // output a datalist option
@@ -128,7 +130,7 @@ $queryStringTC = http_build_query($currentParams);
         echo "  ";
         ?>
       </datalist>
-      <input type="submit" class="btn" value="<?php echo $searchLabel; ?>">
+      <input type="submit" class="btn" id="searchbtn" value="<?php echo $searchLabel; ?>">
       </div>
  
       </div>
@@ -140,7 +142,27 @@ $queryStringTC = http_build_query($currentParams);
   // if set then process the route.
   if (isset($_GET['route']) && !empty(trim($_GET['route']))) {
     $userInput = trim($_GET['route']);
-
+    
+    // Convert small eng letters to capital letters for route search
+    // save 巴士陳 input
+    if (
+        strcasecmp($userInput, "KY Chan") == 0 ||
+        strcasecmp($userInput, "Bus Chan") == 0 ||
+        strcasecmp($userInput, "CS Chan") == 0 ||
+        $userInput === "巴士陳"
+    ) {
+      if (strcasecmp($userInput, "KY Chan") == 0) {
+        $userInput = "KY Chan";
+      } elseif (strcasecmp($userInput, "Bus Chan") == 0) {
+        $userInput = "Bus Chan";
+      } elseif (strcasecmp($userInput, "CS Chan") == 0) {
+        $userInput = "CS Chan";
+      }
+      // for Chinese input "巴士陳", no change is needed
+    } else {
+      $userInput = strtoupper($userInput);
+    }
+    
     // KY Chan
     switch ($userInput) {
       case "KY Chan":
@@ -224,7 +246,11 @@ $queryStringTC = http_build_query($currentParams);
       $obj = json_decode($content);
     }
     if (empty($obj->data->route)) {
-      echo "<span class='nobus'>Invalid route input! Please ensure the route is valid and check the case of letters if applicable.</span>";
+      if ($lang == 'tc') {
+        echo "<span class='nobus'>無效的路線！請確保你輸入了有效的路線。</span>";
+      } else {
+        echo "<span class='nobus'>Invalid route input! Please ensure the route is valid.</span>";
+      }
       die();
     }
 
@@ -232,7 +258,7 @@ $queryStringTC = http_build_query($currentParams);
     echo "<h1>" . $obj->data->route . "</h1>";
     echo "<h2>" . $fromText . " " . $obj->data->$orig_field . " " . $toText . " " . $obj->data->$dest_field . "</h2><br>";
 
-    // load route-stop details.
+    // load route-stop details
     $stopcontent = file_get_contents($findurlstop);
     $obj1 = json_decode($stopcontent);
     $data = $obj1->data;
@@ -251,7 +277,6 @@ $queryStringTC = http_build_query($currentParams);
       echo "<h3><div class='station'>" . $stopName . "</div></h3>";
 
       // find for matching ETA records based on bus stop sequence
-  
       foreach ($etadata as $x) {
         if ($x->seq == $y->seq) {
           $etatime = $x->eta;
@@ -269,7 +294,7 @@ $queryStringTC = http_build_query($currentParams);
         }
       }
     }
-  }else{
+  } else {
     echo "<center>
     <img src='icon.png' width='10%' alt='logo'>
     <div class='pageend'>By ©2024-2025 CSKLSC ICT F.4 student</div>
@@ -286,7 +311,19 @@ $queryStringTC = http_build_query($currentParams);
     <img src="icon.png" width="10%" alt="logo">
     <div class="pageend">By ©2024-2025 CSKLSC ICT F.4 student</div>
   </center>
-
+  
+  <!-- save scroll position after refresh -->
+  <script>
+    window.addEventListener("beforeunload", function() {
+      sessionStorage.setItem("scrollPosition", window.scrollY);
+    });
+    window.addEventListener("load", function() {
+      var scrollPos = sessionStorage.getItem("scrollPosition");
+      if (scrollPos !== null) {
+        window.scrollTo(0, parseInt(scrollPos));
+      }
+    });
+  </script>
+  
 </body>
-
 </html>

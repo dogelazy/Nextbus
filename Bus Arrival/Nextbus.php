@@ -78,6 +78,15 @@ $queryStringTC = http_build_query($currentParams);
   <title><?php echo $pageTitle; ?></title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="icon.png">
+  <style>
+    .eta-details {
+      /* initially hide ETA */
+      display: none; 
+    }
+    .station {
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
@@ -274,7 +283,8 @@ $queryStringTC = http_build_query($currentParams);
       $contentstop = file_get_contents($urlstop);
       $stopobj = json_decode($contentstop);
       $stopName = $stopobj->data->$name_field;
-      echo "<h3><div class='station'>" . $stopName . "</div></h3>";
+      echo "<h3 class='station' onclick='toggleETA(this)' data-stop-id='" . $y->stop . "'><div>" . $stopName . "</div></h3>";
+      echo "<div class='eta-details' id='eta-" . $y->stop . "'>";
 
       // find for matching ETA records based on bus stop sequence
       foreach ($etadata as $x) {
@@ -293,6 +303,7 @@ $queryStringTC = http_build_query($currentParams);
           $foundETA = true;
         }
       }
+      echo "</div>";
     }
   } else {
     echo "<center>
@@ -312,6 +323,7 @@ $queryStringTC = http_build_query($currentParams);
     <div class="pageend">By ©2024-2025 CSKLSC ICT F.4 student</div>
   </center>
   
+  
   <!-- save scroll position after refresh -->
   <script>
     window.addEventListener("beforeunload", function() {
@@ -323,7 +335,30 @@ $queryStringTC = http_build_query($currentParams);
         window.scrollTo(0, parseInt(scrollPos));
       }
     });
+
+    // toggle the visibility of ETA
+    function toggleETA(element) {
+      var etaDetails = element.nextElementSibling;
+      var stopId = element.getAttribute('data-stop-id');
+      if (etaDetails.style.display === "none" || etaDetails.style.display === "") {
+        etaDetails.style.display = "block";
+        localStorage.setItem('eta-' + stopId, 'open');
+      } else {
+        etaDetails.style.display = "none";
+        localStorage.setItem('eta-' + stopId, 'closed');
+      }
+    }
+
+    // restore the visibility state of ETA
+    document.querySelectorAll('.station').forEach(function(station) {
+      var stopId = station.getAttribute('data-stop-id');
+      var etaDetails = document.getElementById('eta-' + stopId);
+      if (localStorage.getItem('eta-' + stopId) === 'open') {
+        etaDetails.style.display = 'block';
+      }
+    });
   </script>
+
   
 </body>
 </html>

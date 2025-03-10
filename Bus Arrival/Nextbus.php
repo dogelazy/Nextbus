@@ -1,3 +1,4 @@
+
 <?php
 session_start();
 $foundETA = false;
@@ -78,15 +79,6 @@ $queryStringTC = http_build_query($currentParams);
   <title><?php echo $pageTitle; ?></title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="icon.png">
-  <style>
-    .eta-details {
-      /* initially hide ETA */
-      display: none; 
-    }
-    .station {
-      cursor: pointer;
-    }
-  </style>
 </head>
 
 <body>

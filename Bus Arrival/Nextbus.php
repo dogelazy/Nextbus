@@ -222,7 +222,7 @@ $queryStringTC = http_build_query($currentParams);
         $direction = "outbound";
       }
     } else {
-      if (strtolower($dirShort) === "i") {
+      if (strtolower($dirShort) === "inbound") {
         $direction = "inbound";
       } else {
         $direction = "outbound";

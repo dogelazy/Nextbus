@@ -128,7 +128,7 @@ $queryStringTC = http_build_query($currentParams);
             if ($lang == 'tc') {
               $directionShort = (strtoupper($x->bound) == "O") ? "回程" : "去程";
             } else {
-              $directionShort = (strtoupper($x->bound) == "O") ? "outbound" : "inboud";
+              $directionShort = (strtoupper($x->bound) == "O") ? "outbound" : "inbound";
             }
             // display, eg:"1A 九巴 往 destination"
             $displayText = $x->route . " " . $KMB . " " . (($lang == 'tc') ? "往" : "to") . " " . (($lang == 'tc') ? $x->dest_tc : $x->dest_en);

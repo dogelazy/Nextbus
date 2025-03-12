@@ -1,71 +1,72 @@
-
 <?php
 session_start();
 $foundETA = false;
-//declare variable for filtering company name
+
+// Declare variables for filtering company names
 $KMB_eng = "KMB";
 $CTB_eng = "CTB";
 $KMB_tc = "九巴";
 $CTB_tc = "城巴";
 
-// check language is gotten and save in session
-if (isset($_GET['lang']) && ($_GET['lang'] == 'tc' || $_GET['lang'] == 'en')) {
+// Check if language is set and save it in the session
+if (isset($_GET['lang']) && in_array($_GET['lang'], ['tc', 'en'])) {
   $_SESSION['lang'] = $_GET['lang'];
 }
-$lang = isset($_SESSION['lang']) ? $_SESSION['lang'] : 'en';
+$lang = $_SESSION['lang'] ?? 'en';
 
-// define texts and field names in tc/en
-if ($lang == 'tc') {
-  $pageTitle = "下一班巴士";
-  $busRouteLabel = "巴士路線:";
-  $searchLabel = "查詢";
-  $fromText = "由";
-  $toText = "往";
-  $minute = "分鐘";
-  $Noschedule = "暫時沒有預定班次";
-  $KMB = "九巴";
-  $CTB = "城巴";
-  $changelog = "變更日誌";
-  $arriving = "到達";
-} else {
-  $pageTitle = "Next bus";
-  $busRouteLabel = "Bus Route:";
-  $searchLabel = "search";
-  $fromText = "From";
-  $toText = "to";
-  $minute = "minute";
-  $Noschedule = "Temporarily no scheduled bus";
-  $KMB = "KMB";
-  $CTB = "CTB";
-  $changelog = "changelog";
-  $arriving = "Arriving";
-}
+// Define texts and field names for tc/en
+$texts = [
+  'tc' => [
+    'pageTitle' => "下一班巴士",
+    'busRouteLabel' => "巴士路線:",
+    'searchLabel' => "查詢",
+    'fromText' => "由",
+    'toText' => "往",
+    'minute' => "分鐘",
+    'Noschedule' => "暫時沒有預定班次",
+    'KMB' => "九巴",
+    'CTB' => "城巴",
+    'changelog' => "變更日誌",
+    'arriving' => "到達"
+  ],
+  'en' => [
+    'pageTitle' => "Next bus",
+    'busRouteLabel' => "Bus Route:",
+    'searchLabel' => "search",
+    'fromText' => "From",
+    'toText' => "to",
+    'minute' => "minute",
+    'Noschedule' => "Temporarily no scheduled bus",
+    'KMB' => "KMB",
+    'CTB' => "CTB",
+    'changelog' => "changelog",
+    'arriving' => "Arriving"
+  ]
+];
 
-// set API with tc/en
-$orig_field = ($lang == 'tc') ? 'orig_tc' : 'orig_en';
-$dest_field = ($lang == 'tc') ? 'dest_tc' : 'dest_en';
-$name_field = ($lang == 'tc') ? 'name_tc' : 'name_en';
-$rmk_field = ($lang == 'tc') ? 'rmk_tc' : 'rmk_en';
+$selectedTexts = $texts[$lang];
 
-//set time zone
+// Set API field names based on the selected language
+$orig_field = $lang == 'tc' ? 'orig_tc' : 'orig_en';
+$dest_field = $lang == 'tc' ? 'dest_tc' : 'dest_en';
+$name_field = $lang == 'tc' ? 'name_tc' : 'name_en';
+$rmk_field = $lang == 'tc' ? 'rmk_tc' : 'rmk_en';
+
+// Set the time zone to HK
 date_default_timezone_set('Asia/Hong_Kong');
 
-// preload KMB route data
+// Preload KMB route data
 $routeurl = 'https://data.etabus.gov.hk/v1/transport/kmb/route/';
-$route_content = file_get_contents($routeurl);
-$routeobj = json_decode($route_content);
-$routedata = $routeobj->data;
+$routedata = json_decode(file_get_contents($routeurl))->data;
 
-// preload CTB route data
+// Preload CTB route data
 $ctburl = 'https://rt.data.gov.hk/v2/transport/citybus/route/ctb';
-$ctbroute_content = file_get_contents($ctburl);
-$ctbrouteobj = json_decode($ctbroute_content);
-$ctbroutedata = $ctbrouteobj->data;
+$ctbroutedata = json_decode(file_get_contents($ctburl))->data;
 
-// refresh every 60s
+// Refresh the page every 60s
 header("refresh:60");
 
-// build query strings for language switching while getting parameters
+// Build query strings for language switching while retaining other parameters
 $currentParams = $_GET;
 $currentParams['lang'] = 'en';
 $queryStringEn = http_build_query($currentParams);
@@ -76,155 +77,83 @@ $queryStringTC = http_build_query($currentParams);
 <html lang="<?php echo $lang; ?>">
 
 <head>
-  <title><?php echo $pageTitle; ?></title>
+  <title><?php echo $selectedTexts['pageTitle']; ?></title>
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/x-icon" href="icon.png">
 </head>
 
 <body>
-  <!-- language switching -->
-   <?php
-   $i = rand(1,2);
-   if($i == 2){
-     echo "<div class='head1'>";
-   } else {
-     echo "<div class='head'>";
-   }
-   ?>
+  <!-- Language switching -->
+  <?php
+  $i = rand(1, 2);
+  echo $i == 2 ? "<div class='head1'>" : "<div class='head'>";
+  ?>
   
-    <br><br><br><br><br>
-    <h1>
-      <font color="white"><?php echo $pageTitle; ?></font>
-    </h1>
-    <div class="headbtn"><a href="?<?php echo $queryStringEn; ?>">English</a> |
-      <a href="?<?php echo $queryStringTC; ?>">繁體中文</a> |
-      <a href="changelog.html"><?php echo $changelog ?></a></div><hr id="line" width="110%" color="white" />
-    <!-- form -->
-    <div class="finder">
+  <br><br><br><br><br>
+  <h1>
+    <font color="white"><?php echo $selectedTexts['pageTitle']; ?></font>
+  </h1>
+  <div class="headbtn">
+    <a href="?<?php echo $queryStringEn; ?>">English</a> |
+    <a href="?<?php echo $queryStringTC; ?>">繁體中文</a> |
+    <a href="changelog.html"><?php echo $selectedTexts['changelog']; ?></a>
+  </div>
+  <hr id="line" width="110%" color="white" />
+  
+  <!-- Form for bus route search -->
+  <div class="finder">
     <form action="" method="get">
-      <?php
-      // save the selected language
-      echo "<input type='hidden' name='lang' value='" . $lang . "'>";
-      ?>
-      <?php echo $busRouteLabel; ?>
-      <!-- submit when click enter -->
-      <input list="route" name="route"
-        value="<?php echo isset($_GET['route']) ? htmlspecialchars($_GET['route']) : ''; ?>"
-        onkeydown="if(event.keyCode === 13){ event.preventDefault(); document.getElementById('searchbtn').click(); return false; }">
+      <input type="hidden" name="lang" value="<?php echo $lang; ?>">
+      <?php echo $selectedTexts['busRouteLabel']; ?>
+      <input list="route" name="route" value="<?php echo htmlspecialchars($_GET['route'] ?? ''); ?>" onkeydown="if(event.keyCode === 13){ event.preventDefault(); document.getElementById('searchbtn').click(); return false; }">
       <datalist id="route">
         <?php
-        // output a datalist option
-        // The displayed text, eg:"1A KMB to SAU MAU PING (CENTRAL)"
         foreach ($routedata as $x) {
           if ($x->service_type == "1") {
-            if ($lang == 'tc') {
-              $directionShort = (strtoupper($x->bound) == "O") ? "回程" : "去程";
+            if (strpos($x->dest_en, "CIRCULAR") !== false || strpos($x->dest_tc, "循環線") !== false) {
+              $directionShort = $lang == 'tc' ? "循環線" : "circular";
             } else {
-              $directionShort = (strtoupper($x->bound) == "O") ? "outbound" : "inbound";
+              $directionShort = strtoupper($x->bound) == "O" ? ($lang == 'tc' ? "回程" : "outbound") : ($lang == 'tc' ? "去程" : "inbound");
             }
-            // display, eg:"1A 九巴 往 destination"
-            $displayText = $x->route . " " . $KMB . " " . (($lang == 'tc') ? "往" : "to") . " " . (($lang == 'tc') ? $x->dest_tc : $x->dest_en);
-            // option value encode both the route & direction
+            $displayText = $x->route . " " . $selectedTexts['KMB'] . " " . ($lang == 'tc' ? "往" : "to") . " " . ($lang == 'tc' ? $x->dest_tc : $x->dest_en);
             echo "<option value='" . $x->route . " | " . $directionShort . "'>" . $displayText . "</option>";
           }
         }
-        echo "  ";
         ?>
       </datalist>
-      <input type="submit" class="btn" id="searchbtn" value="<?php echo $searchLabel; ?>">
-      </div>
- 
-      </div>
-      <br>
-      <br>
-      <br><br>
+      <input type="submit" class="btn" id="searchbtn" value="<?php echo $selectedTexts['searchLabel']; ?>">
+    </form>
+  </div>
+  
+  <br><br><br><br>
 
   <?php
-  // if set then process the route.
   if (isset($_GET['route']) && !empty(trim($_GET['route']))) {
     $userInput = trim($_GET['route']);
     
-    // Convert small eng letters to capital letters for route search
-    // save 巴士陳 input
-    if (
-        strcasecmp($userInput, "KY Chan") == 0 ||
-        strcasecmp($userInput, "Bus Chan") == 0 ||
-        strcasecmp($userInput, "CS Chan") == 0 ||
-        $userInput === "巴士陳"
-    ) {
-      if (strcasecmp($userInput, "KY Chan") == 0) {
-        $userInput = "KY Chan";
-      } elseif (strcasecmp($userInput, "Bus Chan") == 0) {
-        $userInput = "Bus Chan";
-      } elseif (strcasecmp($userInput, "CS Chan") == 0) {
-        $userInput = "CS Chan";
-      }
-      // for Chinese input "巴士陳", no change is needed
+    // Convert small English letters to capital letters for route search
+    // Handle special inputs
+    $specialInputs = ["KY Chan", "Bus Chan", "CS Chan", "巴士陳"];
+    if (in_array($userInput, $specialInputs, true)) {
+      echo "<img src='https://i.ibb.co/hxtQF7xm/IMG-2006.jpg' alt='KY Chan is angry'>";
+      echo "<center><img src='icon.png' width='10%' alt='logo'><div class='pageend'>By ©2024-2025 CSKLSC ICT F.4 student</div></center>";
+      return;
     } else {
       $userInput = strtoupper($userInput);
     }
-    
-    // KY Chan
-    switch ($userInput) {
-      case "KY Chan":
-        echo "<img src='https://i.ibb.co/hxtQF7xm/IMG-2006.jpg' alt='KY Chan is angry'>";
-        echo "<center>
-        <img src='icon.png' width='10%' alt='logo'>
-        <div class='pageend'>By ©2024-2025 CSKLSC ICT F.4 student</div>
-      </center>";
-        return;
-      case "Bus Chan":
-        echo "<img src='https://i.ibb.co/hxtQF7xm/IMG-2006.jpg' alt='KY Chan is angry'>";
-        echo "<center>
-        <img src='icon.png' width='10%' alt='logo'>
-        <div class='pageend'>By ©2024-2025 CSKLSC ICT F.4 student</div>
-      </center>";
-        return;
-      case "CS Chan":
-        echo "<img src='https://i.ibb.co/hxtQF7xm/IMG-2006.jpg' alt='KY Chan is angry'>";
-        echo "<center>
-        <img src='icon.png' width='10%' alt='logo'>
-        <div class='pageend'>By ©2024-2025 CSKLSC ICT F.4 student</div>
-      </center>";
-        return;
-      case "巴士陳":
-        echo "<img src='https://i.ibb.co/hxtQF7xm/IMG-2006.jpg' alt='KY Chan is angry'>";
-        echo "<center>
-        <img src='icon.png' width='10%' alt='logo'>
-        <div class='pageend'>By ©2024-2025 CSKLSC ICT F.4 student</div>
-      </center>";
-        return;
-    }
 
-    // form "Route|direction"
+    // Split user input into route and direction`
     $parts = explode("|", $userInput);
-    if (count($parts) == 2) {
-      $route = trim($parts[0]);
-      $dirShort = trim($parts[1]);
-    } else {
-      $route = $userInput;
-      $dirShort = ($lang == 'tc') ? "回程" : "o";
-    }
+    $route = trim($parts[0]);
+    $dirShort = trim($parts[1] ?? ($lang == 'tc' ? "回程" : "o"));
 
-    // convert the short direction in full name
-    if ($lang == 'tc') {
-      if ($dirShort === "去程") {
-        $direction = "inbound";
-      } else {
-        $direction = "outbound";
-      }
-    } else {
-      if (strtolower($dirShort) === "inbound") {
-        $direction = "inbound";
-      } else {
-        $direction = "outbound";
-      }
-    }
+    // Convert short direction to full name
+    $direction = ($lang == 'tc' && $dirShort === "去程") || (strtolower($dirShort) === "inbound") ? "inbound" : "outbound";
 
-    // build API URL for bus ETA (arrival times)
+    // Build API URL for bus ETA (arrival times)
     $etaurl = "https://data.etabus.gov.hk/v1/transport/kmb/route-eta/" . $route . "/1";
 
-    // build API URL for route details and stops
+    // Build API URL for route details and stops
     $type = 1;
     $url = 'https://data.etabus.gov.hk/v1/transport/kmb/route/';
     $url1 = 'https://data.etabus.gov.hk/v1/transport/kmb/route-stop/';
@@ -234,63 +163,45 @@ $queryStringTC = http_build_query($currentParams);
     $content = file_get_contents($findurl);
     $obj = json_decode($content);
 
-    // if no route data is returned then switch to the opposite direction
+    // If no route data is returned, switch to the opposite direction
     if (empty($obj->data->route)) {
-      if ($direction == "inbound") {
-        $direction = "outbound";
-      } else {
-        $direction = "inbound";
-      }
+      $direction = $direction === "inbound" ? "outbound" : "inbound";
       $findurl = $url . $route . "/" . $direction . "/" . $type;
       $findurlstop = $url1 . $route . "/" . $direction . "/" . $type;
       $content = file_get_contents($findurl);
       $obj = json_decode($content);
     }
     if (empty($obj->data->route)) {
-      if ($lang == 'tc') {
-        echo "<span class='nobus'>無效的路線！請確保你輸入了有效的路線。</span>";
-      } else {
-        echo "<span class='nobus'>Invalid route input! Please ensure the route is valid.</span>";
-      }
+      echo "<span class='nobus'>" . ($lang == 'tc' ? "無效的路線！請確保你輸入了有效的路線。" : "Invalid route input! Please ensure the route is valid.") . "</span>";
       die();
     }
 
     // Display route information
     echo "<h1>" . $obj->data->route . "</h1>";
-    echo "<h2>" . $fromText . " " . $obj->data->$orig_field . " " . $toText . " " . $obj->data->$dest_field . "</h2><br>";
+    echo "<h2>" . $selectedTexts['fromText'] . " " . $obj->data->$orig_field . " " . $selectedTexts['toText'] . " " . $obj->data->$dest_field . "</h2><br>";
 
-    // load route-stop details
+    // Load route-stop details
     $stopcontent = file_get_contents($findurlstop);
-    $obj1 = json_decode($stopcontent);
-    $data = $obj1->data;
-    //load ETA details
-    $objcontent = file_get_contents($etaurl);
-    $objeta = json_decode($objcontent);
-    $etadata = $objeta->data;
+    $data = json_decode($stopcontent)->data;
 
-    // display bus stop name and ETA
+    // Load ETA details
+    $etadata = json_decode(file_get_contents($etaurl))->data;
+
+    // Display bus stop name and ETA
     foreach ($data as $y) {
-      // get bus stop details from the stop API.
-      $urlstop = "https://data.etabus.gov.hk/v1/transport/kmb/stop/" . $y->stop;
-      $contentstop = file_get_contents($urlstop);
-      $stopobj = json_decode($contentstop);
-      $stopName = $stopobj->data->$name_field;
+      $stopName = json_decode(file_get_contents("https://data.etabus.gov.hk/v1/transport/kmb/stop/" . $y->stop))->data->$name_field;
       echo "<h3 class='station' onclick='toggleETA(this)' data-stop-id='" . $y->stop . "'><div>" . $stopName . "</div></h3>";
       echo "<div class='eta-details' id='eta-" . $y->stop . "'>";
 
-      // find for matching ETA records based on bus stop sequence
+      // Find matching ETA records based on bus stop sequence
       foreach ($etadata as $x) {
         if ($x->seq == $y->seq) {
           $etatime = $x->eta;
           if ($etatime == null) {
-            echo "<span class='nobus'>" . $Noschedule . "</span><br>";
+            echo "<span class='nobus'>" . $selectedTexts['Noschedule'] . "</span><br>";
           } else {
-            $now = date(DATE_ATOM);
-            $etatime1 = new DateTime($etatime);
-            $now1 = new DateTime($now);
-            $eta_diff = $etatime1->diff($now1);
-
-            echo "<span class='eta'>" . $eta_diff->format("%i $minute") . "</span> " . "<span class='rmk'>" . $x->$rmk_field . "</span><br>";
+            $eta_diff = (new DateTime($etatime))->diff(new DateTime());
+            echo "<span class='eta'>" . $eta_diff->format("%i " . $selectedTexts['minute']) . "</span> <span class='rmk'>" . $x->$rmk_field . "</span><br>";
           }
           $foundETA = true;
         }
@@ -298,16 +209,12 @@ $queryStringTC = http_build_query($currentParams);
       echo "</div>";
     }
   } else {
-    echo "<center>
-    <img src='icon.png' width='10%' alt='logo'>
-    <div class='pageend'>By ©2024-2025 CSKLSC ICT F.4 student</div>
-  </center>";
+    echo "<center><img src='icon.png' width='10%' alt='logo'><div class='pageend'>By ©2024-2025 CSKLSC ICT F.4 student</div></center>";
     die();
   }
   if (!$foundETA) {
-    echo "<span class='nobus'>" . $Noschedule . "</span><br>";
+    echo "<span class='nobus'>" . $selectedTexts['Noschedule'] . "</span><br>";
   }
-
   ?>
 
   <center>
@@ -315,8 +222,7 @@ $queryStringTC = http_build_query($currentParams);
     <div class="pageend">By ©2024-2025 CSKLSC ICT F.4 student</div>
   </center>
   
-  
-  <!-- save scroll position after refresh -->
+  <!-- Save scroll position after refresh -->
   <script>
     window.addEventListener("beforeunload", function() {
       sessionStorage.setItem("scrollPosition", window.scrollY);
@@ -328,7 +234,7 @@ $queryStringTC = http_build_query($currentParams);
       }
     });
 
-    // toggle the visibility of ETA
+    // Toggle the visibility of ETA
     function toggleETA(element) {
       var etaDetails = element.nextElementSibling;
       var stopId = element.getAttribute('data-stop-id');
@@ -341,7 +247,7 @@ $queryStringTC = http_build_query($currentParams);
       }
     }
 
-    // restore the visibility state of ETA
+    // Restore the visibility state of ETA
     document.querySelectorAll('.station').forEach(function(station) {
       var stopId = station.getAttribute('data-stop-id');
       var etaDetails = document.getElementById('eta-' + stopId);
@@ -350,7 +256,5 @@ $queryStringTC = http_build_query($currentParams);
       }
     });
   </script>
-
-  
 </body>
 </html>

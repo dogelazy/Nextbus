@@ -132,7 +132,7 @@ $queryStringTC = http_build_query($currentParams);
     $userInput = trim($_GET['route']);
     
     // Convert small English letters to capital letters for route search
-    // Handle special inputs
+    // Handle Bus Chan inputs
     $specialInputs = ["KY Chan", "Bus Chan", "CS Chan", "巴士陳"];
     if (in_array($userInput, $specialInputs, true)) {
       echo "<img src='https://i.ibb.co/hxtQF7xm/IMG-2006.jpg' alt='KY Chan is angry'>";
@@ -193,7 +193,8 @@ $queryStringTC = http_build_query($currentParams);
       echo "<h3 class='station' onclick='toggleETA(this)' data-stop-id='" . $y->stop . "'><div>" . $stopName . "</div></h3>";
       echo "<div class='eta-details' id='eta-" . $y->stop . "'>";
 
-      // Find matching ETA records based on bus stop sequence
+      // Find first 3 matching ETA records based on bus stop sequence
+      $count = 0;
       foreach ($etadata as $x) {
         if ($x->seq == $y->seq) {
           $etatime = $x->eta;
@@ -204,6 +205,11 @@ $queryStringTC = http_build_query($currentParams);
             echo "<span class='eta'>" . $eta_diff->format("%i " . $selectedTexts['minute']) . "</span> <span class='rmk'>" . $x->$rmk_field . "</span><br>";
           }
           $foundETA = true;
+
+          $count++;
+          if ($count == 3) {
+            break;
+          }
         }
       }
       echo "</div>";
@@ -222,8 +228,8 @@ $queryStringTC = http_build_query($currentParams);
     <div class="pageend">By ©2024-2025 CSKLSC ICT F.4 student</div>
   </center>
   
-  <!-- Save scroll position after refresh -->
   <script>
+    //Save scroll position after refresh
     window.addEventListener("beforeunload", function() {
       sessionStorage.setItem("scrollPosition", window.scrollY);
     });

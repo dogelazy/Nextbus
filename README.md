@@ -4,6 +4,4 @@ P.S. Easter egg included
 
 Known issue:
 
-Entering lower case will not enable to find routes.
-
-CSS is too simple
+Wrong data shown after last bus

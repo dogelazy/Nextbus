@@ -1,7 +1,8 @@
 <?php
+//last bus will be given a boolean value "true" for 30 minute then reset to false
 session_start();
 $foundETA = false;
-
+$Islastbus = false;
 // Declare variables for filtering company names
 $KMB_eng = "KMB";
 $CTB_eng = "CTB";
@@ -198,19 +199,26 @@ $queryStringTC = http_build_query($currentParams);
       foreach ($etadata as $x) {
         if ($x->seq == $y->seq) {
           $etatime = $x->eta;
-          if ($etatime == null) {
-            echo "<span class='nobus'>" . $selectedTexts['Noschedule'] . "</span><br>";
-          } else {
-            $eta_diff = (new DateTime($etatime))->diff(new DateTime());
-            echo "<span class='eta'>" . $eta_diff->format("%i " . $selectedTexts['minute']) . "</span> <span class='rmk'>" . $x->$rmk_field . "</span><br>";
-          }
-          $foundETA = true;
+          $rmk=$x->$rmk_field;
+          $eta_diff = (new DateTime($etatime))->diff(new DateTime());
+            if($eta_diff->format("%i")==0 && $etatime!=null){
+              echo "<span class='eta'><span id='arriving'>".$selectedTexts['arriving']."</span></span> <span class='rmk'>" . $x->$rmk_field . "</span><br>";
+              $foundETA = true;
+            }elseif ($etatime!=null){
+              $foundETA = true;
+              echo "<span class='eta'>" . $eta_diff->format("%i " . $selectedTexts['minute']) . "</span> <span class='rmk'>" . $x->$rmk_field."</span><br>";
+        }
+          
 
           $count++;
+      
           if ($count == 3) {
             break;
           }
         }
+      }
+      if (!$foundETA) {
+        echo "<span class='nobus'>" . $selectedTexts['Noschedule'] . "</span><br>";
       }
       echo "</div>";
     }
@@ -218,9 +226,7 @@ $queryStringTC = http_build_query($currentParams);
     echo "<center><img src='icon.png' width='10%' alt='logo'><div class='pageend'>By ©2024-2025 CSKLSC ICT F.4 student</div></center>";
     die();
   }
-  if (!$foundETA) {
-    echo "<span class='nobus'>" . $selectedTexts['Noschedule'] . "</span><br>";
-  }
+  
   ?>
 
   <center>

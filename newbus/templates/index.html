@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NextBus</title>
+  <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+  <div class="header">
+    <span id="title">NextBus</span>
+    <!-- Language Toggle -->
+    <span class="lang-toggle">
+      <label for="langSelect">Language / 語言: </label>
+      <span id="langSwitch">
+        <a href="#" onclick="setLanguage('en')">English</a> |
+        <a href="#" onclick="setLanguage('zh')">中文</a>
+      </span>
+    </span>
+  </div>
+
+  <!-- Section: Routes -->
+  <div class="section glass-card" id="routesSection">
+    <h2 id="routesHeader">Search Routes</h2>
+    <input type="text" id="routeInput" placeholder="Select a route" autocomplete="off" />
+    <br><br>
+    <!-- Route list always visible -->
+    <div class="tab-panel">
+      <ul id="routeList" class="dropdown"></ul>
+    </div>
+  </div>
+
+  <!-- Section: Arrivals -->
+  <div class="section glass-card hidden" id="arrivalsSection">
+    <h2 id="arrivalsHeader">Upcoming Arrivals at Selected Stop</h2>
+    <div id="arrivals"></div>
+  </div>
+
+  <!-- Section: Stops -->
+  <div class="section glass-card hidden" id="stopsSection">
+    <h2 id="stopsHeader">
+      <span id="stopsLabel">Stops for Selected Route</span>
+      <span id="routeInfo"></span>
+      <span id="directionToggle" onclick="changedirection()">⟳ Click here to change direction of route</span>
+    </h2>
+    <div id="stopList" class="stop-list"></div>
+  </div>
+
+  <script src="static/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+/* ===========================
+   Global Layout & Background
+   =========================== */
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* darker gradient */
+  color: #f5f5f5;
+}
+
+/* ===========================
+   Glass Card Containers
+   =========================== */
+.glass-card {
+  background: rgba(30, 30, 30, 0.6);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 15px 0;
+  width: 90%;
+  max-width: 600px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ===========================
+   Header Bar (Title + Language)
+   =========================== */
+.header {
+  display: flex;
+  justify-content: space-between; /* title left, lang toggle right */
+  align-items: center;
+  width: 90%;
+  max-width: 600px;
+  margin-bottom: 20px;
+}
+
+#title {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0;
+  padding-left: 10px; /* force left padding */
+}
+
+.lang-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 10px; /* force right padding */
+}
+
+.lang-toggle a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+  margin: 0 6px;
+}
+
+.lang-toggle a:hover {
+  text-decoration: underline;
+}
+
+/* ===========================
+   Section Headers
+   =========================== */
+h2 {
+  color: #e0e0e0;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* ===========================
+   Inputs
+   =========================== */
+input, select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+  margin-top: 10px;
+  background: rgba(255,255,255,0.1);
+  color: #f5f5f5;
+  font-size: 14px;
+}
+
+input::placeholder {
+  color: #bbb;
+}
+
+#routeInput {
+  text-align: center;
+  display: block;
+  margin: 0 auto;
+  width: 80%;
+}
+
+/* ===========================
+   Dropdown List
+   =========================== */
+.dropdown {
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+
+.dropdown li {
+  padding: 10px;
+  color: #f5f5f5;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.dropdown li:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* ===========================
+   Stop List & Items
+   =========================== */
+.stop-list {
+  margin-top: 10px;
+}
+
+.stop-item {
+  background: rgba(30,30,30,0.85);
+  margin-bottom: 8px;
+  border-radius: 6px;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.stop-item:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.stop-details {
+  display: none;
+  margin-top: 6px;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.stop-details.active {
+  display: block;
+  background: rgba(255, 255, 255, 0.13);
+  box-shadow: 0 0 10px rgba(183, 183, 183, 0.2);
+}
+
+/* ===========================
+   Arrival List (4-column grid)
+   =========================== */
+.arrival-list {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 2fr; /* Route | Destination | ETA | Remark */
+  gap: 8px;
+  padding: 8px 0;
+  margin-top: 6px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  list-style: none;
+}
+
+.arrival-list li {
+  display: contents; /* spans align into grid cells */
+}
+
+.arrival-list li span {
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arrival-route {
+  font-weight: bold;
+  color: #fff;
+}
+
+.arrival-dest {
+  color: #f0f0f0;
+}
+
+.arrival-eta {
+  color: #ffff66; /* bright yellow for visibility */
+  font-weight: bold;
+}
+
+.remark {
+  color: #4a90e2;
+  font-size: 0.85em;
+  font-style: italic;
+}
+
+/* ===========================
+   Utility Classes
+   =========================== */
+.hidden {
+  display: none;
+}
+
+.highlight {
+  border-left: 4px solid #ffeb3b;
+  background: rgba(255,255,255,0.15);
+}
+.arrival-route {
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+}
+
+.arrival-route:hover {
+  color: #ffeb3b; /* highlight on hover */
+  text-decoration: underline;
+}
+#stopsHeader {
+  display: flex;
+  justify-content: space-between; /* pushes reverse to the right */
+  align-items: center;
+  cursor:pointer;
+  font-size: 120%;
+}
+#stopsLabel {
+  font-weight: bold;
+}
+
+#routeInfo {
+  font-size: 0.9em;
+  color: #ffffff;      
+  background-color: red;     
+  border-radius: 10px;
+  padding: 4px 8px;
+  margin-left: 10px;
+}
+
+#directionToggle {
+  font-size: 0.8em;
+  cursor: pointer;
+  align-self: flex-start; /* keep aligned left */
+  margin-left: 10px;
+}
+
